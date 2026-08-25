@@ -1,0 +1,23 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+# Generated fixtures are ignored, EXCEPT the three committed below. The
+# assignment asks for "a sample audio file or instructions for sourcing one" --
+# this repo ships both, so a reviewer can curl a real request on a fresh clone
+# without running anything first.
+samples/*
+!samples/README.md
+!samples/adult_male_clean.wav
+!samples/adult_male_truck_5db.wav
+!samples/silence.wav
+recordings/
+eval-out/
+.env
+.DS_Store
+*.egg-info/
+models/
+*.onnx

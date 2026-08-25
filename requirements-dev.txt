@@ -1,0 +1,11 @@
+-r requirements.txt
+pytest==9.1.1
+pytest-asyncio==1.4.0
+httpx==0.28.1
+
+# Optional: only needed for `eval/run_eval.py --adapter hf`, which streams a
+# community Common Voice mirror. Deliberately NOT in requirements.txt -- it
+# would add ~200 MB to the runtime image for something the service never uses.
+# The adapter prints an install hint if you invoke it without these.
+datasets==4.5.0
+soundfile==0.14.0

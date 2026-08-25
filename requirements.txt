@@ -1,0 +1,36 @@
+# Exact pins only. Floating versions are a supply-chain risk and make
+# "works on my machine" latency numbers unreproducible.
+#
+# torch / torchaudio are installed from the PyTorch CPU index (see Dockerfile).
+# They are a MATCHED PAIR -- torchaudio links against libtorch, so the minor
+# versions must agree. 2.11.0 is the newest pair both indexes carry for cp311.
+torch==2.11.0
+torchaudio==2.11.0
+
+# Inference stack
+transformers==4.57.6
+huggingface-hub==0.36.0
+safetensors==0.7.0
+numpy==2.3.4
+
+# ONNX Runtime: 2.1x faster than PyTorch for this model on Linux aarch64,
+# 2.3x slower on macOS (where torch links Apple Accelerate). Both backends
+# ship; VA_BACKEND=auto picks by what is present. See app/inference/onnx_backend.py.
+onnxruntime==1.29.0
+onnx==1.22.0        # build-time only (torch.onnx.export); see scripts/export_onnx.py
+
+# Voice activity detection for the audio-quality gate.
+# MIT licensed, weights bundled inside the wheel -> no runtime download.
+silero-vad==6.2.1
+
+# API
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.4
+pydantic-settings==2.15.0
+python-multipart==0.0.32
+websockets==17.0.1
+
+# Observability
+structlog==26.1.0
+prometheus-client==0.26.0
