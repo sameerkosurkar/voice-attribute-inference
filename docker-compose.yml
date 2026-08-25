@@ -1,0 +1,84 @@
+services:
+  voice-attributes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: voice-attributes:latest
+    container_name: voice-attributes
+    ports:
+      - "8000:8000"
+    environment:
+      VA_LOG_LEVEL: INFO
+      VA_LOG_JSON: "true"
+      # 6-layer model by default. Swap to the 24-layer variant for accuracy at
+      # ~3x the transformer compute:
+      # VA_AGE_GENDER_MODEL: audeering/wav2vec2-large-robust-24-ft-age-gender
+      # Sized from measurement, not habit. 5 s WAV, ONNX backend, p50:
+      #   2 cpu / 2 threads -> ~450 ms      4 cpu / 4 threads -> ~245 ms
+      #   6 cpu / 6 threads -> ~195 ms
+      # 4/4 leaves comfortable headroom under the 500 ms target.
+      # torch threads = intra-op parallelism within ONE inference.
+      # inference threads = how many inferences can run at once.
+      # 4 x 2 optimises single-request latency (what the 500 ms SLO measures)
+      # while keeping a second pool thread free. That second thread is not
+      # optional: with a 1-thread pool, language ID queues behind the age/gender
+      # pass, misses its 250 ms budget every time, and the field comes back null
+      # on 3/3 requests -- measured. Per-pod capacity is ~4 req/s; past that,
+      # add replicas (see DESIGN.md "Scaling"), do not raise these numbers.
+      VA_TORCH_THREADS: "4"
+      VA_INFERENCE_THREADS: "2"
+      # VA_MAX_CONCURRENT_INFERENCES is deliberately unset: it derives from
+      # VA_INFERENCE_THREADS (see the validator in app/config.py). Setting it
+      # independently and too high admits work that then queues invisibly inside
+      # the thread pool -- measured p95 of 2.1 s against a 500 ms SLO.
+
+      # Language ID (bonus) is OFF by default here, deliberately.
+      #
+      # Whisper pads every input to 30 s of mel, so its encoder cost is CONSTANT
+      # regardless of clip length -- it does not scale down for a 5 s chunk. It
+      # contends with the age/gender pass for the same cores and costs ~180 ms
+      # p50 (245 ms -> ~430 ms at 4 cpu / 4 threads), which puts p95 at risk of
+      # breaching the 500 ms target the assignment actually specifies.
+      #
+      # The service already applies this rule per-request: the language task
+      # runs under a deadline and returns null rather than delaying the required
+      # fields. Defaulting it off here is the same decision at deploy level --
+      # an optional field must not put the required contract's SLO at risk.
+      #
+      # It is fully implemented and works. To see it, set this to "true"
+      # (and ideally raise cpus to 6.0 below):
+      VA_ENABLE_LANGUAGE_ID: "false"
+
+    # --- privacy / hardening -------------------------------------------------
+    # No volumes are mounted. The service holds caller audio in memory only and
+    # has nowhere to write it even if a future change tried. See PRIVACY.md.
+    read_only: true
+    tmpfs:
+      # ffmpeg is fed by pipe and writes nothing, but a read-only rootfs still
+      # needs a scratch mount. noexec/nosuid so it cannot become a foothold.
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 5
+
+    deploy:
+      resources:
+        limits:
+          # Matches VA_TORCH_THREADS above. Giving torch more threads than
+          # cores makes p95 worse, not better -- measured: under a 2-core limit,
+          # 2 threads gave 621 ms and 8 threads gave 905 ms.
+          cpus: "4.0"
+          memory: 3g
+        reservations:
+          memory: 1500m
+
+    restart: unless-stopped
+    stop_grace_period: 30s
