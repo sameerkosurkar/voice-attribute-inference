@@ -4,8 +4,8 @@
 Streams a WAV in real time -- honouring wall-clock pacing rather than blasting
 the file -- so the progressive output looks like it would on a live call.
 
-    python scripts/ws_client.py                                  # uses a fixture
-    python scripts/ws_client.py --file call.wav --url ws://localhost:8000/ws/analyze
+    .venv/bin/python scripts/ws_client.py                                  # uses a fixture
+    .venv/bin/python scripts/ws_client.py --file call.wav --url ws://localhost:8000/ws/analyze
 
 Watch two columns as it runs: `confidence` should climb as evidence accumulates,
 and `stable` should flip to True once further audio stops changing the answer.
@@ -57,7 +57,7 @@ async def main() -> int:
     if not args.file.exists():
         raise SystemExit(
             f"{args.file} not found. Generate fixtures first:\n"
-            "    python scripts/make_sample_audio.py --outdir samples"
+            "    make sample   (or: .venv/bin/python scripts/make_sample_audio.py --outdir samples)"
         )
 
     pcm, rate = read_wav(args.file)

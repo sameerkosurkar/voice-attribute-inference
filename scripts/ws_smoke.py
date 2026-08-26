@@ -9,7 +9,7 @@ Why it exists: the REST smoke test passed happily while the streaming path was
 never exercised against a real container. A refactor that broke only the
 WebSocket route would have shipped green.
 
-    python scripts/ws_smoke.py --url ws://localhost:8000/ws/analyze --samples samples
+    .venv/bin/python scripts/ws_smoke.py --url ws://localhost:8000/ws/analyze --samples samples
 """
 
 from __future__ import annotations

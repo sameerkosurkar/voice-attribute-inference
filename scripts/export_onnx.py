@@ -5,7 +5,7 @@ Run at image build time so the container never pays the export cost and needs
 no torch-to-ONNX toolchain at runtime. See app/inference/onnx_backend.py for
 the measurements that justify using it.
 
-    python scripts/export_onnx.py --out /opt/models/onnx/age_gender.onnx
+    .venv/bin/python scripts/export_onnx.py --out /opt/models/onnx/age_gender.onnx
 """
 
 from __future__ import annotations

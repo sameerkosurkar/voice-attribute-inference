@@ -2,16 +2,16 @@
 """Evaluate the service against labelled speech and report calibration.
 
     # Common Voice extract you downloaded (the citable path)
-    python eval/run_eval.py --adapter local --path ~/cv-corpus-17.0-en --limit 500
+    .venv/bin/python eval/run_eval.py --adapter local --path ~/cv-corpus-17.0-en --limit 500
 
     # Community HF mirror, streamed (zero-setup smoke test)
-    python eval/run_eval.py --adapter hf --limit 200
+    .venv/bin/python eval/run_eval.py --adapter hf --limit 200
 
     # Your own call recordings, named <gender>_<age>_*.wav
-    python eval/run_eval.py --adapter dir --path ./recordings
+    .venv/bin/python eval/run_eval.py --adapter dir --path ./recordings
 
     # Noise-robustness curve: how the service degrades in a truck cab
-    python eval/run_eval.py --adapter local --path ~/cv --noise-snr 20 10 5 0
+    .venv/bin/python eval/run_eval.py --adapter local --path ~/cv --noise-snr 20 10 5 0
 
 The harness runs the SAME pipeline the API runs -- decode, quality gate,
 calibration, thresholds -- rather than calling the model directly. Evaluating

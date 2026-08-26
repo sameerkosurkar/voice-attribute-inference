@@ -13,8 +13,8 @@ through the model and check the labels come back right. That is this script.
 
 Run it whenever VA_AGE_GENDER_MODEL changes.
 
-    python scripts/verify_gender_mapping.py                 # macOS 'say' voices
-    python scripts/verify_gender_mapping.py --dir ./clips   # your own, named
+    .venv/bin/python scripts/verify_gender_mapping.py                 # macOS 'say' voices
+    .venv/bin/python scripts/verify_gender_mapping.py --dir ./clips   # your own, named
                                                             # <label>_<name>.wav
 """
 

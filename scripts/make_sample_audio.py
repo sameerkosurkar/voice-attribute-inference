@@ -33,7 +33,7 @@ Neither source measures ACCURACY. Synthetic voices are not real speakers.
 Accuracy is measured in eval/run_eval.py against real labelled speech.
 
 Usage:
-    python scripts/make_sample_audio.py --outdir samples
+    .venv/bin/python scripts/make_sample_audio.py --outdir samples   # or: make sample
 """
 
 from __future__ import annotations

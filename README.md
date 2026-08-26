@@ -131,7 +131,7 @@ unusable audio, and a typed 415 on garbage bytes.
 ### Streaming demo
 
 ```bash
-python scripts/ws_client.py
+make ws                              # or: .venv/bin/python scripts/ws_client.py
 ```
 
 Streams a WAV at 1× wall clock and prints progressive predictions. Watch
@@ -592,17 +592,21 @@ Highlights worth reading: `test_age_on_a_boundary_splits_between_neighbours`
 ## Evaluation harness
 
 ```bash
+# These need the venv from `make install` -- the eval stack (torch,
+# transformers) is not on your system python. Use the venv interpreter, or the
+# equivalent `make eval ARGS="..."`.
+
 # Common Voice extract you downloaded (the citable path)
-python eval/run_eval.py --adapter local --path ~/cv-corpus-17.0-en --limit 500
+.venv/bin/python eval/run_eval.py --adapter local --path ~/cv-corpus-17.0-en --limit 500
 
 # Community HF mirror, streamed (zero-setup smoke test)
-python eval/run_eval.py --adapter hf --limit 200
+.venv/bin/python eval/run_eval.py --adapter hf --limit 200
 
 # Your own call recordings, named <gender>_<age>_*.wav  <- the one that matters
-python eval/run_eval.py --adapter dir --path ./recordings
+.venv/bin/python eval/run_eval.py --adapter dir --path ./recordings
 
 # Noise-robustness curve
-python eval/run_eval.py --adapter local --path ~/cv --noise-snr 20 10 5 0
+.venv/bin/python eval/run_eval.py --adapter local --path ~/cv --noise-snr 20 10 5 0
 ```
 
 > **Note.** Mozilla moved Common Voice off Hugging Face to the Mozilla Data
