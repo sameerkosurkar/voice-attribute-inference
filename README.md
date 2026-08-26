@@ -561,13 +561,13 @@ them once from the lifespan hook.
 ## Testing
 
 ```bash
-make test          # 91 tests, ~3 s, mock backend — no weights needed
+make test          # 111 tests, ~7 s, mock backend — no weights needed
 make export-onnx   # once, so the ONNX parity tests have a graph to compare
-make test-slow     # 19 tests, real weights: label mapping, latency, ONNX parity
+make test-slow     # 24 tests, real weights: label mapping, latency, ONNX parity
 ```
 
 Without `make export-onnx` the 7 parity tests skip (they need an exported graph;
-the container has one baked in, a fresh checkout does not). The remaining 12
+the container has one baked in, a fresh checkout does not). The remaining 17
 slow tests run either way.
 
 The split is deliberate: the fast suite is usable as a pre-commit gate because

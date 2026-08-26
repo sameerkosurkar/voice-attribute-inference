@@ -6,8 +6,12 @@
 #
 # Notable choices:
 #   * CPU-only torch from the PyTorch CPU index. The default PyPI wheel bundles
-#     CUDA and is ~6 GB; the CPU wheel is a fraction of that, and this service
-#     is deliberately CPU-bound (see README "Scaling").
+#     CUDA, which would add gigabytes for hardware this service never uses --
+#     it is deliberately CPU-bound (see README "Scaling"). The resulting image
+#     measures ~4.0 GB on a cold build: roughly half deps (torch, onnxruntime,
+#     transformers) and half baked-in weights (wav2vec2 ~1.2 GB, its ONNX export
+#     346 MB, whisper-tiny). Baking the weights is what lets the runtime set
+#     HF_HUB_OFFLINE=1 and need no network at all.
 #   * Weights are baked in, so the runtime sets HF_HUB_OFFLINE=1 and needs no
 #     network. See scripts/download_models.py.
 #   * espeak-ng (~5 MB) is installed so `make sample` and the smoke test can
