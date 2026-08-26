@@ -101,8 +101,10 @@ curl -s -X POST localhost:8000/analyze -F "audio=@samples/adult_male_clean.wav"
 ```
 
 The image bakes in all model weights, so the container needs **no network at
-runtime** (`HF_HUB_OFFLINE=1`). First build downloads ~1 GB of weights and takes
-a few minutes; after that, startup to `/ready` is ~3 s.
+runtime** (`HF_HUB_OFFLINE=1`). Measured on a cold `--no-cache` build: the
+resulting image is **~4.0 GB** — roughly half dependencies (torch, ONNX Runtime,
+transformers) and half baked-in weights (wav2vec2 ~1.2 GB, its ONNX export
+346 MB, whisper-tiny). Startup to `/ready` is then **~2.2 s**.
 
 ### Local
 
